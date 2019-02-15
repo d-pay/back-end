@@ -39,8 +39,9 @@ app.get('/api/process', function (req, res) {
     var process = require('./ProcessPayment.js');
 
     let name = req.query.name;
+    let valor = req.query.valor;
 
-    process.processPayment(name);
+    process.processPayment(name, valor);
 
     res.send({
         response: true
@@ -68,9 +69,11 @@ app.get('/api/search', function (req, res) {
                 console.log('\nError in create search request : ' + JSON.stringify(error));
             }
             else if (data) {
-                // console.log('\nData of create search request : ' + JSON.stringify(data));
+                console.log('\nData of create search request : ' + JSON.stringify(data));
             }
+
             response['text'] = JSON.parse(response['text']);
+
 
             let array = [];
             for (let transactionSummaries of response['text']["_embedded"]["transactionSummaries"]) {
@@ -83,7 +86,9 @@ app.get('/api/search', function (req, res) {
                 }
 
                 if (status == "SOK") {
-                    let firstName, lastName, totalAmount, currency, paymentMethod;
+                    let firstName, lastName, totalAmount, currency, paymentMethod, submitTimeUtc;
+
+                    submitTimeUtc = transactionSummaries["submitTimeUtc"];
 
                     firstName = transactionSummaries["orderInformation"]["billTo"]["firstName"];
                     lastName = transactionSummaries["orderInformation"]["billTo"]["lastName"];
@@ -91,30 +96,61 @@ app.get('/api/search', function (req, res) {
                     currency = transactionSummaries["orderInformation"]["amountDetails"]["currency"];
                     paymentMethod = transactionSummaries["paymentInformation"]["paymentMethod"]["type"];
 
-                    let obj = {
-                        name: "" + firstName + " " + lastName,
-                        totalAmount: "" + totalAmount,
-                        currency: "" + currency,
-                        paymentMethod: "" + paymentMethod,
-                        daysLeft: "30 days left"
+                    let id = 0;
+                    let newItem = false;
+                    if (firstName.includes("Tuin Sapataria".toUpperCase())) {
+                        id = 1;
+                        newItem = true;
+                    } else if (firstName.includes("Restaurante Paladar".toUpperCase())) {
+                        id = 2;
+                        newItem = true;
+                    } else if (firstName.includes("Doutor Faz tudo".toUpperCase())) {
+                        id = 3;
+                        newItem = true;
+                    } else if (firstName.includes("Minha oficina".toUpperCase())) {
+                        id = 4;
+                        newItem = true;
+                    } else if (firstName.includes("Plumber encanamentos".toUpperCase())) {
+                        id = 5;
+                        newItem = true;
+                    } else if (firstName.includes("Tuin Sapataria")) {
+                        id = 6;
+                        newItem = true;
                     }
 
-                    array.push(obj)
+
+                    if (newItem == true) {
+                        let obj = {
+                            name: "" + firstName + " ",
+                            totalAmount: "" + totalAmount,
+                            currency: "" + currency,
+                            paymentMethod: "" + paymentMethod,
+                            daysLeft: "30 dias restantes",
+                            submitTimeUtc: "" + submitTimeUtc,
+                            id: id
+                        }
+
+                        array.push(obj)
+                    }
+
+
                 }
             }
 
             let balance = 0;
 
             for (let obj of array) {
-                balance = parseDouble(obj["totalAmount"]);
+                if (obj["totalAmount"] != undefined) {
+                    balance = balance + parseFloat("" + obj["totalAmount"]);
+                }
             }
 
             let result = {
-                balance: balance,
+                balance: "" + balance,
                 debits: array
             }
 
-            res.send(JSON.parse(result));
+            res.send(result);
             // console.log('\nResponse Code of create search request : ' + JSON.stringify(response['status']));
             // callback(error, data);
         });
