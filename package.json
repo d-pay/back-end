@@ -1,7 +1,7 @@
 {
     "name": "main",
     "scripts": {
-        "build": "npm start"
+        "start": "node index.js"
     },
     "dependencies": {
         "async": "^2.6.2",

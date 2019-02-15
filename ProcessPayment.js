@@ -9,7 +9,7 @@ var configuration = require(filePath);
  * This is a sample code to call PaymentApi,
  * createPayment method will create a new payment
  */
-function processPayment(callback, enableCapture) {
+function processPayment(name, callback, enableCapture) {
     try {
         var configObject = new configuration();
         var instance = new cybersourceRestApi.PaymentsApi(configObject);
@@ -43,8 +43,8 @@ function processPayment(callback, enableCapture) {
 
         var billTo = new cybersourceRestApi.Ptsv2paymentsOrderInformationBillTo();
         billTo.country = 'US';
-        billTo.firstName = 'John';
-        billTo.lastName = 'Deo';
+        billTo.firstName = '' + name;
+        billTo.lastName = '';
         billTo.phoneNumber = '4158880000';
         billTo.address1 = 'test';
         billTo.postalCode = '94105';
@@ -97,7 +97,7 @@ function processPayment(callback, enableCapture) {
     }
 }
 if (require.main === module) {
-    processPayment(function () {
+    processPayment(function (name) {
         console.log('\nProcessPayment end.');
     }, false);
 }
