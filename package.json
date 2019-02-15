@@ -1,0 +1,20 @@
+{
+    "name": "main",
+    "scripts": {
+        "build": "npm start"
+    },
+    "dependencies": {
+        "async": "^2.6.2",
+        "bluebird": "^3.5.3",
+        "body-parser": "^1.18.3",
+        "cors": "^2.8.5",
+        "cybersource-rest-client": "0.0.5",
+        "express": "^4.16.4",
+        "fs": "0.0.1-security",
+        "https": "^1.0.0",
+        "request": "^2.88.0"
+    },
+    "devDependencies": {
+        "webpack": "^3.8.1"
+    }
+}
